@@ -1,1 +1,33 @@
+server:
+  port: 0
+  error:
+    include-message: always
 
+spring:
+  application:
+    name: member-service
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        default_batch_fetch_size: 50
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
