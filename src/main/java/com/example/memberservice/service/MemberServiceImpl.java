@@ -52,7 +52,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public MemberDto createUser(MemberDto memberDto) {
+    public MemberDto createMember(MemberDto memberDto) {
         memberDto.setMemberId(UUID.randomUUID().toString());
 
         MemberEntity memberEntity = mapper.map(memberDto, MemberEntity.class);
@@ -65,9 +65,9 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public UserDetails getUserDetailsByEmail(String email) {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         MemberEntity memberEntity = memberRepository
-                .findByEmail(email)
+                .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(env.getProperty("member.not-found-msg")));
 
         return new User(memberEntity.getEmail(), memberEntity.getEncryptedPassword(),

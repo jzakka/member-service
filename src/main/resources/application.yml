@@ -2,7 +2,6 @@ server:
   port: 0
   error:
     include-message: always
-
 spring:
   application:
     name: member-service
@@ -34,3 +33,27 @@ eureka:
 
 member:
   not-found-msg: 사용자를 찾을 수 없습니다.
+  email:
+    notnull-msg: 이메일을 입력해주세요.
+    size-msg: 이메일을 두 글자 이상 입력해주세요.
+  name:
+    notnull-msg: 이름을 입력해주세요.
+    size-msg: 이름을 두 글자 이상 입력해주세요.
+  password:
+    notnull-msg: 비밀번호를 입력해주세요.
+    size-msg: 비밀번호를 8글자 이상 입력해주세요.
+
+token:
+  expiration_time: 21600000 # 60 * 60 * 6 * 1000=> 6시간
+  secret: testtoken # TODO 설정 파일 보안정보 옮기기
+
+login:
+  email:
+    notnull-msg: 이메일을 입력해주세요.
+    size-msg: 이메일을 두 글자 이상 입력해주세요.
+  password:
+    notnull-msg: 비밀번호를 입력해주세요.
+    size-msg: 비밀번호를 8글자 이상 입력해주세요.
+logging:
+  level:
+    org.springframework.security: DEBUG
