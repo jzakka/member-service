@@ -1,5 +1,6 @@
 package com.example.memberservice.config;
 
+import com.example.memberservice.client.JoinServiceClient;
 import com.example.memberservice.filter.AuthenticationFilter;
 import com.example.memberservice.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
     private final MemberService memberService;
     private final Environment env;
+    private final JoinServiceClient joinServiceClient;
 
     @SneakyThrows
     @Bean
@@ -43,7 +45,7 @@ public class SecurityConfig {
     private AuthenticationFilter authenticationFilter(AuthenticationConfiguration authConfig) {
         AuthenticationManager authManager = authConfig.getAuthenticationManager();
 
-        AuthenticationFilter authFilter = new AuthenticationFilter(authManager, memberService, env);
+        AuthenticationFilter authFilter = new AuthenticationFilter(authManager, memberService, joinServiceClient, env);
         authFilter.setAuthenticationManager(authManager);
 
         return authFilter;

@@ -1,8 +1,10 @@
 package com.example.memberservice.filter;
 
+import com.example.memberservice.client.JoinServiceClient;
 import com.example.memberservice.dto.MemberDto;
 import com.example.memberservice.service.MemberService;
 import com.example.memberservice.vo.RequestLogin;
+import com.example.memberservice.vo.TokenJoinAuthority;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,14 +24,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private MemberService memberService;
+    private JoinServiceClient joinServiceClient;
     private Environment env;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, MemberService memberService, Environment env) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager,
+                                MemberService memberService,
+                                JoinServiceClient joinServiceClient,
+                                Environment env) {
         super(authenticationManager);
         this.memberService = memberService;
+        this.joinServiceClient = joinServiceClient;
         this.env = env;
     }
 
@@ -61,6 +69,19 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .setSubject(userDetails.getMemberId())
                 .setExpiration(new Date(System.currentTimeMillis()
                         + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                .compact();
+
+        List<TokenJoinAuthority> joinedGather = joinServiceClient.getJoinedGather(userDetails.getMemberId(), "Bearer " + token);
+
+        /**
+         * 사용자가 참여한 모임정보를 얻어오고 토큰을 한번 더 생성
+         */
+        token = Jwts.builder()
+                .setSubject(userDetails.getMemberId())
+                .setExpiration(new Date(System.currentTimeMillis()
+                        + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .claim("gatherIds", joinedGather)
                 .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
                 .compact();
 
